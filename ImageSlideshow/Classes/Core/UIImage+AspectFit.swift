@@ -3,13 +3,12 @@
 //  ImageSlideshow
 //
 //  Created by Petr Zvoníček on 31.08.15.
-//  
+//
 //
 
 import UIKit
 
 extension UIImage {
-
     func tgr_aspectFitRectForSize(_ size: CGSize) -> CGRect {
         let targetAspect: CGFloat = size.width / size.height
         let sourceAspect: CGFloat = self.size.width / self.size.height

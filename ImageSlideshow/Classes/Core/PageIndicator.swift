@@ -16,7 +16,7 @@ public protocol PageIndicatorView: class {
     var page: Int { get set }
 
     /// Total number of pages of the page indicator
-    var numberOfPages: Int { get set}
+    var numberOfPages: Int { get set }
 }
 
 extension UIPageControl: PageIndicatorView {
@@ -64,21 +64,21 @@ public class LabelPageIndicator: UILabel, PageIndicatorView {
         initialize()
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         initialize()
     }
 
     private func initialize() {
-        self.textAlignment = .center
+        textAlignment = .center
     }
 
     private func updateLabel() {
-        text = "\(page+1)/\(numberOfPages)"
+        text = "\(page + 1)/\(numberOfPages)"
     }
 
     public override func sizeToFit() {
         let maximumString = String(repeating: "8", count: numberOfPages) as NSString
-        self.frame.size = maximumString.size(withAttributes: [.font: font as Any])
+        frame.size = maximumString.size(withAttributes: [.font: font as Any])
     }
 }

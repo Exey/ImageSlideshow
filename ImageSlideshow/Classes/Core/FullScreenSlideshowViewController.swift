@@ -9,20 +9,19 @@ import UIKit
 
 @objcMembers
 open class FullScreenSlideshowViewController: UIViewController {
-
-    open var slideshow: ImageSlideshow = {
+    var slideshow: ImageSlideshow = {
         let slideshow = ImageSlideshow()
         slideshow.zoomEnabled = true
         slideshow.contentScaleMode = UIViewContentMode.scaleAspectFit
         slideshow.pageIndicatorPosition = PageIndicatorPosition(horizontal: .center, vertical: .bottom)
         // turns off the timer
         slideshow.slideshowInterval = 0
-        slideshow.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
+        // slideshow.autoresizingMask = [UIViewAutoresizing.flexibleWidth, UIViewAutoresizing.flexibleHeight]
 
         return slideshow
     }()
 
-    /// Close button 
+    /// Close button
     open var closeButton = UIButton()
 
     /// Close button frame
@@ -34,7 +33,7 @@ open class FullScreenSlideshowViewController: UIViewController {
     /// Index of initial image
     open var initialPage: Int = 0
 
-    /// Input sources to 
+    /// Input sources to
     open var inputs: [InputSource]?
 
     /// Background color
@@ -49,17 +48,7 @@ open class FullScreenSlideshowViewController: UIViewController {
 
     fileprivate var isInit = true
 
-    convenience init() {
-        self.init(nibName:nil, bundle:nil)
-
-        if #available(iOS 13.0, *) {
-            self.modalPresentationStyle = .fullScreen
-            // Use KVC to set the value to preserve backwards compatiblity with Xcode < 11
-            self.setValue(true, forKey: "modalInPresentation")
-        }
-    }
-
-    override open func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = backgroundColor
@@ -75,13 +64,23 @@ open class FullScreenSlideshowViewController: UIViewController {
         closeButton.setImage(UIImage(named: "ic_cross_white", in: Bundle(for: type(of: self)), compatibleWith: nil), for: UIControlState())
         closeButton.addTarget(self, action: #selector(FullScreenSlideshowViewController.close), for: UIControlEvents.touchUpInside)
         view.addSubview(closeButton)
+
+        let downSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes(_:)))
+        downSwipe.direction = .down
+        view.addGestureRecognizer(downSwipe)
     }
 
-    override open var prefersStatusBarHidden: Bool {
+    func handleSwipes(_ sender: UISwipeGestureRecognizer) {
+        if sender.direction == .down {
+            close()
+        }
+    }
+
+    open override var prefersStatusBarHidden: Bool {
         return true
     }
 
-    override open func viewWillAppear(_ animated: Bool) {
+    open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         if isInit {
@@ -90,33 +89,49 @@ open class FullScreenSlideshowViewController: UIViewController {
         }
     }
 
-    override open func viewWillDisappear(_ animated: Bool) {
+    open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+    }
+
+    func hide() {
+        let coreApp: CoreAppService = ServiceLocator.assembly.inject()
+        coreApp.window2?.isHidden = true
+        coreApp.window2VC?.view.isHidden = false
+        // mainWindow?.alpha = 1
+
+        /* UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn, animations: {
+             coreApp.window2VC?.view.alpha = 0.0
+         }, completion: { _ in */
+        coreApp.mainWindow?.makeKeyAndVisible()
+        // })
+
         slideshow.slideshowItems.forEach { $0.cancelPendingLoad() }
     }
 
     open override func viewDidLayoutSubviews() {
         if !isBeingDismissed {
-            let safeAreaInsets: UIEdgeInsets
-            if #available(iOS 11.0, *) {
-                safeAreaInsets = view.safeAreaInsets
-            } else {
-                safeAreaInsets = UIEdgeInsets.zero
-            }
-            
-            closeButton.frame = closeButtonFrame ?? CGRect(x: max(10, safeAreaInsets.left), y: max(10, safeAreaInsets.top), width: 40, height: 40)
-        }
+            /* let safeAreaInsets: UIEdgeInsets
+             if #available(iOS 11.0, *) {
+                 safeAreaInsets = view.safeAreaInsets
+             } else {
+                 safeAreaInsets = UIEdgeInsets.zero
+             } */
 
-        slideshow.frame = view.frame
+            closeButton.frame = closeButtonFrame ?? CGRect(x: 10, y: 10, width: 40, height: 40)
+        }
+        let f = CGRect(x: view.frame.origin.x, y: view.frame.origin.y - 40, width: view.frame.size.width, height: view.frame.size.height)
+
+        slideshow.frame = f
     }
 
-    @objc func close() {
+    func close() {
         // if pageSelected closure set, send call it with current page
         if let pageSelected = pageSelected {
             pageSelected(slideshow.currentPage)
         }
+        // window2?.resignKey()
 
         dismiss(animated: true, completion: nil)
+        hide()
     }
 }

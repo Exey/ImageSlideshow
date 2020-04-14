@@ -17,11 +17,11 @@ import UIKit
      - parameter image: Image that was set to the image view.
      */
     func load(to imageView: UIImageView, with callback: @escaping (_ image: UIImage?) -> Void)
-    
+
     /**
      Cancel image load on the image view
      - parameter imageView: Image view that is loading the image
-    */
+     */
     @objc optional func cancelLoad(on imageView: UIImageView)
 }
 
@@ -58,14 +58,14 @@ open class ImageSource: NSObject, InputSource {
 @objcMembers
 open class BundleImageSource: NSObject, InputSource {
     var imageString: String
-    
+
     /// Initializes a new Image Source with an image name from the main bundle
     /// - parameter imageString: name of the file in the application's main bundle
     public init(imageString: String) {
         self.imageString = imageString
         super.init()
     }
-    
+
     public func load(to imageView: UIImageView, with callback: @escaping (UIImage?) -> Void) {
         let image = UIImage(named: imageString)
         imageView.image = image
@@ -77,14 +77,14 @@ open class BundleImageSource: NSObject, InputSource {
 @objcMembers
 open class FileImageSource: NSObject, InputSource {
     var path: String
-    
+
     /// Initializes a new Image Source with an image name from the main bundle
     /// - parameter imageString: name of the file in the application's main bundle
     public init(path: String) {
         self.path = path
         super.init()
     }
-    
+
     public func load(to imageView: UIImageView, with callback: @escaping (UIImage?) -> Void) {
         let image = UIImage(contentsOfFile: path)
         imageView.image = image

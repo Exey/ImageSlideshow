@@ -41,7 +41,7 @@ public struct PageIndicatorPosition {
         switch vertical {
         case .under:
             return indicatorSize.height
-        case .customUnder(let padding):
+        case let .customUnder(padding):
             return indicatorSize.height + padding
         default:
             return 0
@@ -62,20 +62,20 @@ public struct PageIndicatorPosition {
         switch horizontal {
         case .center:
             xSize = parentFrame.size.width / 2 - indicatorSize.width / 2
-        case .left(let padding):
+        case let .left(padding):
             xSize = padding + edgeInsets.left
-        case .right(let padding):
+        case let .right(padding):
             xSize = parentFrame.size.width - indicatorSize.width - padding - edgeInsets.right
         }
 
         switch vertical {
         case .bottom, .under, .customUnder:
             ySize = parentFrame.size.height - indicatorSize.height - edgeInsets.bottom
-        case .customBottom(let padding):
+        case let .customBottom(padding):
             ySize = parentFrame.size.height - indicatorSize.height - padding - edgeInsets.bottom
         case .top:
             ySize = edgeInsets.top
-        case .customTop(let padding):
+        case let .customTop(padding):
             ySize = padding + edgeInsets.top
         }
 

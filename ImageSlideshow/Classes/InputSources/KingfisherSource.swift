@@ -6,11 +6,8 @@
 //
 //
 
-import UIKit
-#if SWIFT_PACKAGE
-import ImageSlideshow
-#endif
 import Kingfisher
+import UIKit
 
 /// Input Source to image using Kingfisher
 public class KingfisherSource: NSObject, InputSource {
@@ -19,7 +16,7 @@ public class KingfisherSource: NSObject, InputSource {
 
     /// placeholder used before image is loaded
     public var placeholder: UIImage?
-    
+
     /// options for displaying, ie. [.transition(.fade(0.2))]
     public var options: KingfisherOptionsInfo?
 
@@ -40,7 +37,7 @@ public class KingfisherSource: NSObject, InputSource {
     /// - parameter options: options for displaying
     public init?(urlString: String, placeholder: UIImage? = nil, options: KingfisherOptionsInfo? = nil) {
         if let validUrl = URL(string: urlString) {
-            self.url = validUrl
+            url = validUrl
             self.placeholder = placeholder
             self.options = options
             super.init()
@@ -48,7 +45,7 @@ public class KingfisherSource: NSObject, InputSource {
             return nil
         }
     }
-    
+
     /// Load an image to an UIImageView
     ///
     /// - Parameters:
@@ -56,16 +53,16 @@ public class KingfisherSource: NSObject, InputSource {
     ///   - callback: Completion callback with an optional image
     @objc
     public func load(to imageView: UIImageView, with callback: @escaping (UIImage?) -> Void) {
-        imageView.kf.setImage(with: self.url, placeholder: self.placeholder, options: self.options, progressBlock: nil) { result in
+        imageView.kf.setImage(with: url, placeholder: placeholder, options: options, progressBlock: nil) { result in
             switch result {
-            case .success(let image):
+            case let .success(image):
                 callback(image.image)
             case .failure:
                 callback(nil)
             }
         }
     }
-    
+
     /// Cancel an image download task
     ///
     /// - Parameter imageView: UIImage view with the download task that should be canceled
